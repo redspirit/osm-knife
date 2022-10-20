@@ -3,8 +3,8 @@ const fs = require('fs/promises');
 const through = require('through2');
 const parseOSM = require('./parser');
 
-const osm = parseOSM();
-let index = {};
+// const osm = parseOSM();
+// let index = {};
 
 
 const readData = (fd, start, callback) => {
@@ -73,7 +73,7 @@ const loadIndex = async (indexFile) => {
     return JSON.parse(buf.toString());
 }
 
-const findAddressById = (index, type, id) => {
+const findAddressById = (index, type, targetId) => {
 
     let collection = [];
     if(type === 'node') {
@@ -86,33 +86,68 @@ const findAddressById = (index, type, id) => {
         collection = index.relations;
     }
 
-    console.log(collection.addr);
+    let ind = BS(collection.addr, targetId, (id, k) => {
+        let startEnd = collection.idx[k]
+        if(id < startEnd[0]) return -1;
+        if(id > startEnd[1]) return 1;
+        if(id >= startEnd[0] && id <= startEnd[1]) {
+            return 0
+        } else {
+            return null;
+        }
+    })
 
+    return ind ? collection.addr[ind] : null;
+
+    // id 1637830059
+
+}
+
+const BS = (list, el, compareFn) => {
+    let m = 0;
+    let n = list.length - 1;
+    while (m <= n) {
+        let k = (n + m) >> 1;
+        let cmp = compareFn(el, k);
+        if (cmp > 0) {
+            m = k + 1;
+        } else if(cmp < 0) {
+            n = k - 1;
+        } else if (cmp === 0) {
+            return k;
+        } else {
+            return null;
+        }
+    }
+    return -m - 1;
 }
 
 (async () => {
 
-    const file1 = '/home/spirit/osrm/pbf/belarus-latest.osm.pbf';
-    const file2 = '/home/spirit/osrm/pbf/_test.pbf';
-    const indexFile = '/home/spirit/osrm/pbf/bel.index';
+    const file1 = 'D:/osrm/pbf/belarus-latest.osm.pbf';
+    // const file2 = 'D:/osrm/pbf/_test.pbf';
+    // const file2 = 'D:/osrm/pbf/_test.pbf';
+    const indexFile = 'D:/osrm/pbf/bel.index';
 
     let ind = await loadIndex(indexFile);
-    findAddressById(ind, 'node', 123);
-    return 1;
-
-    // const data = await createIndex(file1, indexFile);
-    // console.log('ok');
-    // return 1;
+    const targetId = 189527182;
+    let address = findAddressById(ind, 'way', targetId);
+    console.log('Finded address', address);
 
     const fd = await fs.open(file1, 'r');
-
-    // 171
-    // 3048
-    // 4087
-
-    readData(fd, 171, (data) => {
-        console.log('data 1', data.items.length);
+    readData(fd, address, (data) => {
+        data.items.forEach(item => {
+            if(item.id === targetId) {
+                console.log('Found:', item);
+            }
+        })
+        // console.log(data);
     });
+    return 1;
+
+    // await createIndex(file1, indexFile);
+    // console.log('ok');
+    // return 1;
 
 })()
 
