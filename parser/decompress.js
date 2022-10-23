@@ -1,5 +1,5 @@
 const zlib = require('zlib');
-const Transform = require('readable-stream').Transform;
+const Transform = require('stream').Transform;
 
 class BlobDecompressor extends Transform {
 

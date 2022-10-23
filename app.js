@@ -15,10 +15,10 @@ const Knife = require('./lib/Knife');
 
     const wayId = 25263694;
     const relId = 1749244;
-    // const rel = await knife.getRelation(relId, 0);
+    const rel = await knife.getRelation(relId, 0);
     const way = await knife.getWay(wayId, 0);
 
-    // console.log('Rel:', rel);
+    console.log('Rel:', rel);
     console.log('Way:', way);
 
 })().catch(err => {

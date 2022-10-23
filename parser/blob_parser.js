@@ -1,5 +1,5 @@
 const parsers = require('./parsers.js');
-const Transform = require('readable-stream').Transform;
+const Transform = require('stream').Transform;
 
 const SIZE = 0, HEADER = 1, BLOB = 2;
 
@@ -20,6 +20,10 @@ class BlobParser extends Transform {
         this._sizeOffset = null;
     }
 
+    reset () {
+
+    }
+
     _transform (buf, enc, next) {
 
         if (this._prev) {
@@ -34,7 +38,7 @@ class BlobParser extends Transform {
 
         if (this._mode === SIZE) {
             this._sizeOffset = this._offset;
-            var len = buf.readUInt32BE(0);
+            let len = buf.readUInt32BE(0);
             this._mode = HEADER;
             this._offset += this._waiting;
             this._waiting = len;
@@ -43,7 +47,7 @@ class BlobParser extends Transform {
         else if (this._mode === HEADER) {
             this._header = parsers.file.BlobHeader.decode(buf.slice(0, this._waiting));
             this._mode = BLOB;
-            var nbuf = buf.slice(this._waiting);
+            let nbuf = buf.slice(this._waiting);
             this._offset += this._waiting;
             this._waiting = this._header.datasize;
             this._transform(nbuf, enc, next);
@@ -51,11 +55,11 @@ class BlobParser extends Transform {
         else if (this._mode === BLOB) {
             this._blob = parsers.file.Blob.decode(buf.slice(0, this._waiting));
 
-            var h = this._header;
-            var o = this._offset;
+            let h = this._header;
+            let o = this._offset;
 
             this._mode = SIZE;
-            var nbuf = buf.slice(this._waiting);
+            let nbuf = buf.slice(this._waiting);
             this._offset += this._waiting;
             this._waiting = 4;
 
@@ -68,7 +72,7 @@ class BlobParser extends Transform {
                 zlib_data: this._blob.zlib_data
             });
 
-            // console.log(nbuf.length);
+            console.log(nbuf.length);
 
             this._transform(nbuf, enc, next);
         }

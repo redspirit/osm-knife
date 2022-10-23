@@ -19,7 +19,6 @@
   "dependencies": {
     "async": "^3.2.4",
     "protocol-buffers": "^5.0.0",
-    "readable-stream": "^4.2.0",
     "through2": "^4.0.2",
     "underscore": "^1.13.6"
   }

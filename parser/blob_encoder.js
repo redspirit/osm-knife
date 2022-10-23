@@ -1,29 +1,29 @@
-var parsers = require('./parsers.js');
-var Transform = require('readable-stream').Transform;
-var inherits = require('util').inherits;
+const parsers = require('./parsers.js');
+const Transform = require('stream').Transform;
 
+class BlobEncoder extends Transform {
 
-module.exports = BlobEncoder;
-inherits(BlobEncoder, Transform);
+    constructor() {
+        super({ objectMode: true, highWaterMark: 1 });
+    }
 
-function BlobEncoder () {
-    Transform.call(this, { objectMode: true, highWaterMark: 1 });
+    _transform (blob, enc, next) {
+        let blobMessage = parsers.file.Blob.encode({
+            zlib_data: blob.zlib_data
+        });
+        let blobHeader = parsers.file.BlobHeader.encode({
+            type: blob.type,
+            datasize: blobMessage.length
+        })
+        let sizeBuf = new Buffer(4);
+        sizeBuf.writeUInt32BE(blobHeader.length, 0);
+        this.push(sizeBuf);
+        this.push(blobHeader);
+        this.push(blobMessage);
+
+        next();
+    }
+
 }
 
-BlobEncoder.prototype._transform = function(blob, enc, next) {
-
-    var blobMessage = parsers.file.Blob.encode({
-        zlib_data: blob.zlib_data
-    });
-    var blobHeader = parsers.file.BlobHeader.encode({
-        type: blob.type,
-        datasize: blobMessage.length
-    })
-    var sizeBuf = new Buffer(4);
-    sizeBuf.writeUInt32BE(blobHeader.length, 0);
-    this.push(sizeBuf);
-    this.push(blobHeader);
-    this.push(blobMessage);
-
-    next();
-};
+module.exports = BlobEncoder;

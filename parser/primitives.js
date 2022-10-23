@@ -1,5 +1,5 @@
 const parsers = require('./parsers.js');
-const Transform = require('readable-stream').Transform;
+const Transform = require('stream').Transform;
 
 const NANO = 1e-9;
 
