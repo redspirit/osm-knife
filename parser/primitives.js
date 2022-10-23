@@ -1,60 +1,61 @@
 const parsers = require('./parsers.js');
 const Transform = require('readable-stream').Transform;
-const inherits = require('util').inherits;
-
-module.exports = PrimitivesParser;
-inherits(PrimitivesParser, Transform);
-
-function PrimitivesParser () {
-    Transform.call(this, { objectMode: true, highWaterMark: 1 });
-}
 
 const NANO = 1e-9;
 
-PrimitivesParser.prototype._transform = function(chunk, enc, cb) {
+class PrimitivesParser extends Transform {
 
-    if (chunk.type === 'OSMHeader') {
-        this._osmheader = parsers.osm.HeaderBlock.decode(chunk.data);
-    } else if (chunk.type === 'OSMData') {
-        var block = parsers.osm.PrimitiveBlock.decode(chunk.data);
-        var opts = {
-            stringtable: decodeStringtable(block.stringtable.s),
-            granularity: NANO * block.granularity,
-            lat_offset: NANO * block.lat_offset,
-            lon_offset: NANO * block.lon_offset,
-            date_granularity: block.date_granularity,
-            // HistoricalInformation: this._osmheader.required_features.indexOf('HistoricalInformation') >= 0
-        };
-        // Output:
-        var items = [];
-        block.primitivegroup.forEach(function(group) {
-            if (group.dense) {
-                parseDenseNodes(group.dense, opts, items);
-            }
-            group.ways.forEach(function(way) {
-                parseWay(way, opts, items);
-            });
-            group.relations.forEach(function(relation) {
-                parseRelation(relation, opts, items);
-            });
-            if (group.nodes && group.nodes.length > 0) {
-                console.warn(group.nodes.length + " unimplemented nodes");
-            }
-            if (group.changesets && group.changesets.length > 0) {
-                console.warn(group.changesets.length + " unimplemented changesets");
-            }
-        });
-
-        if (items.length > 0) {
-            this.push({
-                items,
-                offset: chunk.offset
-            });
-        }
+    constructor() {
+        super({ objectMode: true, highWaterMark: 1 });
     }
 
-    cb();
-};
+    _transform (chunk, enc, cb) {
+        if (chunk.type === 'OSMHeader') {
+            this._osmheader = parsers.osm.HeaderBlock.decode(chunk.data);
+        } else if (chunk.type === 'OSMData') {
+            var block = parsers.osm.PrimitiveBlock.decode(chunk.data);
+            var opts = {
+                stringtable: decodeStringtable(block.stringtable.s),
+                granularity: NANO * block.granularity,
+                lat_offset: NANO * block.lat_offset,
+                lon_offset: NANO * block.lon_offset,
+                date_granularity: block.date_granularity,
+                // HistoricalInformation: this._osmheader.required_features.indexOf('HistoricalInformation') >= 0
+            };
+            // Output:
+            var items = [];
+            block.primitivegroup.forEach(function(group) {
+                if (group.dense) {
+                    parseDenseNodes(group.dense, opts, items);
+                }
+                group.ways.forEach(function(way) {
+                    parseWay(way, opts, items);
+                });
+                group.relations.forEach(function(relation) {
+                    parseRelation(relation, opts, items);
+                });
+                if (group.nodes && group.nodes.length > 0) {
+                    console.warn(group.nodes.length + " unimplemented nodes");
+                }
+                if (group.changesets && group.changesets.length > 0) {
+                    console.warn(group.changesets.length + " unimplemented changesets");
+                }
+            });
+
+            if (items.length > 0) {
+                this.push({
+                    items,
+                    offset: chunk.offset
+                });
+            }
+        }
+
+        cb();
+
+    }
+
+}
+
 
 function decodeStringtable (bufs) {
     return bufs.map(function(buf) {
@@ -133,10 +134,6 @@ function parseWay(data, opts, results) {
         refs: refs
     };
 
-    if (data.info) {
-        way.info = parseInfo(data.info, opts);
-    }
-
     results.push(way);
 }
 
@@ -181,23 +178,8 @@ function parseRelation(data, opts, results) {
         tags: tags,
         members: members
     };
-    if (data.info) {
-        relation.info = parseInfo(data.info, opts);
-    }
 
     results.push(relation);
 }
 
-function parseInfo(dInfo, opts) {
-    var info = {
-        version: dInfo.version,
-        timestamp: opts.date_granularity * dInfo.timestamp,
-        changeset: dInfo.changeset,
-        uid: dInfo.uid,
-        user: opts.stringtable[dInfo.user_sid]
-    };
-    if (opts.HistoricalInformation && dInfo.hasOwnProperty('visible')) {
-        info.visible = dInfo.visible;
-    }
-    return info;
-}
+module.exports = PrimitivesParser;
