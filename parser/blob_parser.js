@@ -1,11 +1,19 @@
-var parsers = require('./parsers.js');
-var Transform = require('readable-stream').Transform;
-var inherits = require('inherits');
+const parsers = require('./parsers.js');
+const Transform = require('readable-stream').Transform;
+const inherits = require('util').inherits;
 
 module.exports = BlobParser;
 inherits(BlobParser, Transform);
 
-var SIZE = 0, HEADER = 1, BLOB = 2;
+const SIZE = 0, HEADER = 1, BLOB = 2;
+
+// class BlobParser extends Transform {
+//
+//     constructor() {
+//         super();
+//     }
+//
+// }
 
 function BlobParser () {
     Transform.call(this);

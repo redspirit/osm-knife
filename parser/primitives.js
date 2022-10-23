@@ -1,6 +1,6 @@
-var parsers = require('./parsers.js');
-var Transform = require('readable-stream').Transform;
-var inherits = require('inherits');
+const parsers = require('./parsers.js');
+const Transform = require('readable-stream').Transform;
+const inherits = require('util').inherits;
 
 module.exports = PrimitivesParser;
 inherits(PrimitivesParser, Transform);
@@ -9,7 +9,7 @@ function PrimitivesParser () {
     Transform.call(this, { objectMode: true, highWaterMark: 1 });
 }
 
-var NANO = 1e-9;
+const NANO = 1e-9;
 
 PrimitivesParser.prototype._transform = function(chunk, enc, cb) {
 

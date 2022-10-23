@@ -1,6 +1,6 @@
 var zlib = require('zlib');
 var Transform = require('readable-stream').Transform;
-var inherits = require('inherits');
+var inherits = require('util').inherits;
 
 module.exports = BlobDecompressor;
 inherits(BlobDecompressor, Transform);

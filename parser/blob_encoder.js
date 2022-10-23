@@ -1,6 +1,6 @@
 var parsers = require('./parsers.js');
 var Transform = require('readable-stream').Transform;
-var inherits = require('inherits');
+var inherits = require('util').inherits;
 
 
 module.exports = BlobEncoder;
