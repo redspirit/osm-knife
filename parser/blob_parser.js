@@ -72,8 +72,8 @@ class BlobParser extends Transform {
                 zlib_data: this._blob.zlib_data
             });
 
-            console.log(nbuf.length);
-
+            // console.log(nbuf.length);
+            //
             this._transform(nbuf, enc, next);
         }
 

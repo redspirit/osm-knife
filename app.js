@@ -13,13 +13,14 @@ const Knife = require('./lib/Knife');
 
     await knife.loadIndex();
 
-    const wayId = 25263694;
+    // const wayId = 25263694;
+    const wayId = 560900717;
     const relId = 1749244;
-    const rel = await knife.getRelation(relId, 0);
-    const way = await knife.getWay(wayId, 0);
+    const rel = await knife.getRelation(relId, 1);
+    // const way = await knife.getWay(wayId, 0);
 
-    console.log('Rel:', rel);
-    console.log('Way:', way);
+    console.log('Rel:', JSON.stringify(rel));
+    // console.log('Way:', way);
 
 })().catch(err => {
     console.error(err);
