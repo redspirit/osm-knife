@@ -17,7 +17,11 @@
   },
   "homepage": "https://github.com/redspirit/osm-knife#readme",
   "dependencies": {
+    "@radarlabs/s2": "^0.0.4",
+    "@turf/helpers": "^6.5.0",
+    "@turf/polygonize": "^6.5.0",
     "async": "^3.2.4",
+    "osm-polygon-features": "^0.9.2",
     "protocol-buffers": "^5.0.0",
     "through2": "^4.0.2",
     "underscore": "^1.13.6"

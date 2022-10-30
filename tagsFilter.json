@@ -1,0 +1,29 @@
+{
+  "countries": [{
+    "type": "boundary",
+    "boundary": "administrative",
+    "admin_level": "2"
+  }],
+  "regions": [{
+    "type": "boundary",
+    "boundary": "administrative",
+    "admin_level": "4"
+  }],
+  "cities": [{
+    "type": "boundary",
+    "place": "city"
+  },{
+    "type": "boundary",
+    "place": "town"
+  }, {
+    "type": "boundary",
+    "place": "village"
+  }, {
+    "type": "boundary",
+    "place": "hamlet"
+  }],
+  "houses": [{
+    "addr:housenumber": "*",
+    "addr:street": "*"
+  }]
+}
