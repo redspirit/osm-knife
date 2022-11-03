@@ -1,22 +1,17 @@
 
 const s2 = require('@radarlabs/s2');
+const util = require('util');
+const _ = require('underscore');
 
-// an array of lat/lng pairs representing a region (a part of Brooklyn, in this case)
-const loopLLs = [[40.70113825399865,-73.99229764938354],[40.70113825399865,-73.98766279220581],
-    [40.70382234072197,-73.98766279220581],[40.70382234072197,-73.99229764938354]];
 
-// map to an array of normalized s2.LatLng
-const s2LLs = loopLLs.map(([lat, lng]) => (new s2.LatLng(lat, lng)));
 
-// generate s2 cells to cover this polygon
-const s2level = 14;
-const covering = s2.RegionCoverer.getCoveringTokens(s2LLs, { min: s2level, max: s2level });
-covering.forEach(c => console.log(c));
+// cells.forEach(cell => {
+//     t.insertCell(cell);
+// });
+// console.log(util.inspect(t.getData(), false, null, true));
 
-// check if a point is contained inside this region
-const point = new s2.CellId(new s2.LatLng(40.70248844447621, -73.98991584777832));
-const pointAtLevel14 = point.parent(s2level);
-console.log('point', pointAtLevel14.token());
 
-const coveringSet = new Set(covering);
-console.log(coveringSet.has(pointAtLevel14.token()));
+// let res = t.search('46ce026a1');
+// console.log(res);
+
+// console.log(s2.CellId.fromToken('89c25a37').parent(12).token());
