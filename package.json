@@ -26,5 +26,8 @@
     "protocol-buffers": "^5.0.0",
     "through2": "^4.0.2",
     "underscore": "^1.13.6"
+  },
+  "devDependencies": {
+    "clipboardy": "^3.0.0"
   }
 }

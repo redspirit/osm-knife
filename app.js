@@ -1,7 +1,13 @@
 
+const fs = require('fs');
 const Knife = require('./lib/Knife');
 const KTree = require('./lib/KTree');
+const KPoly = require('./lib/KPoly');
 const tagsFilter = require('./tagsFilter');
+const utils = require('./lib/utils');
+// const clipboardy = require('clipboardy');
+
+
 
 (async () => {
 
@@ -15,10 +21,45 @@ const tagsFilter = require('./tagsFilter');
     // await knife.createIndexFile();
 
     // await knife.applyFilter(tagsFilter, tagsFile);
+    // await knife.statFilters(tagsFile);
     // console.log('ok');
     // return;
 
     await knife.loadIndex();
+
+    // const rels = await knife.getRelation(59195, 1);
+    // fs.writeFileSync('/Users/spirit/workspace/osm/region_raw.json', JSON.stringify(rels));
+    let text = fs.readFileSync('/Users/spirit/workspace/osm/region_raw.json').toString();
+    let rels = JSON.parse(text);
+
+    const poly = new KPoly();
+    let geoj = poly.fromRelation(rels);
+
+    utils.clipboard(geoj);
+    // clipboardy.writeSync(JSON.stringify(geoj));
+
+    // console.log(geoj);
+
+    // let geos = knife.relationToGeoJson(rels);
+    // const tokens1 = knife.getS2Tokens(geos);
+    // return console.log(JSON.stringify(geos));
+    // return console.log(geos.features);
+    return;
+
+    await knife.readEntityIndex(tagsFile, 'regions', 'relation', async (relId) => {
+
+        const rel = await knife.getRelation(59752, 1);
+        // let geo = knife.relationToGeoJson(rel);
+
+        // 59752
+
+        console.log(rel);
+        // console.log(relId);
+
+
+    });
+
+    return;
 
     // const wayId = 25263694;
     const wayId = 560900717;
@@ -34,7 +75,7 @@ const tagsFilter = require('./tagsFilter');
     let geo = knife.relationToGeoJson(rel);
     // console.log('points:', JSON.stringify(geo));
 
-    const tokens = knife.getS2CellsGeo(geo);
+    const tokens = knife.getS2Tokens(geo);
     console.log(tokens.join(','));
 
     const tree = new KTree();
