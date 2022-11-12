@@ -35,27 +35,30 @@ const utils = require('./lib/utils');
     const poly = new KPoly();
     let geoj = poly.fromRelation(rels);
 
-    utils.clipboard(geoj);
+
     // clipboardy.writeSync(JSON.stringify(geoj));
 
     // console.log(geoj);
 
     // let geos = knife.relationToGeoJson(rels);
-    // const tokens1 = knife.getS2Tokens(geos);
+    const tokens1 = knife.getS2Tokens(geoj);
     // return console.log(JSON.stringify(geos));
-    // return console.log(geos.features);
+
+    // let str = [...tokens1].join(',');
+    // utils.clipboard(str);
+    // console.log(str);
     return;
 
-    await knife.readEntityIndex(tagsFile, 'regions', 'relation', async (relId) => {
+    await knife.readEntityIndex(tagsFile, 'regions', 'relation', async (relId, next) => {
 
-        const rel = await knife.getRelation(59752, 1);
-        // let geo = knife.relationToGeoJson(rel);
+        const rel = await knife.getRelation(relId, 1);
+        const poly = new KPoly();
+        let geo = poly.fromRelation(rel);
 
         // 59752
 
         console.log(rel);
         // console.log(relId);
-
 
     });
 
